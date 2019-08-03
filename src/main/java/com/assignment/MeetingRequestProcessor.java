@@ -4,47 +4,65 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 
-public class MeetingRequestProcessor {
-    public static Map<LocalDate, List<Meeting>> process(List<Meeting> meetings, LocalTime startTime, LocalTime endTime) {
+class MeetingRequestProcessor {
+
+    static Map<LocalDate, List<Meeting>> process(List<Meeting> meetings, LocalTime startTime, LocalTime endTime) {
         Collections.sort(meetings);
-        Map<LocalDate, List<Meeting>> bookedMeetingsByDate = new HashMap<>();
+        Map<LocalDate, List<Meeting>> bookedMeetingsByDate = new TreeMap<>(getDateComparator());
+
         meetings.forEach(meeting -> {
-            if(isValid(meeting, startTime, endTime)) {
-                List<Meeting> allMeetingsOnDate = bookedMeetingsByDate.get(meeting.startTime.toLocalDate());
+            if (isValidMeeting(meeting, startTime, endTime)) {
+
+                List<Meeting> allMeetingsOnDate = bookedMeetingsByDate.get(meeting.getMeetingDate());
                 if (allMeetingsOnDate != null) {
                     bookMeetingIfDoesNotOverlap(allMeetingsOnDate, meeting);
                 } else {
-                    bookedMeetingsByDate.put(meeting.startTime.toLocalDate(), new LinkedList<>(Collections.singletonList(meeting)));
+                    bookedMeetingsByDate.put(meeting.getMeetingDate(), new LinkedList<>(Collections.singletonList(meeting)));
                 }
             }
         });
+
         return bookedMeetingsByDate;
     }
 
-    private static boolean isValid(Meeting meeting, LocalTime startTime, LocalTime endTime) {
-        return (meeting.startTime.toLocalTime().equals(startTime) || meeting.startTime.toLocalTime().isAfter(startTime))
-                && (meeting.endTime.toLocalTime().equals(endTime) || meeting.endTime.toLocalTime().isBefore(endTime));
+    private static Comparator<LocalDate> getDateComparator() {
+        return (LocalDate d1, LocalDate d2) -> {
+            if (d1.isEqual(d2))
+                return 0;
+            else if (d1.isBefore(d2)) {
+                return -1;
+            } else {
+                return 1;
+            }
+        };
     }
 
-    private static void bookMeetingIfDoesNotOverlap(List<Meeting> allMeetingsOnDate, Meeting meetingToAdd) {
+    private static boolean isValidMeeting(Meeting meeting, LocalTime startTime, LocalTime endTime) {
+        return (meeting.getStartTime().toLocalTime().equals(startTime) || meeting.getStartTime().toLocalTime().isAfter(startTime))
+                && (meeting.getEndTime().toLocalTime().equals(endTime) || meeting.getEndTime().toLocalTime().isBefore(endTime));
+    }
+
+    private static List<Meeting> bookMeetingIfDoesNotOverlap(List<Meeting> allMeetingsOnDate, Meeting meetingToAdd) {
         int noOfMeetings = allMeetingsOnDate.size();
-        for (int i = 0; i < noOfMeetings; i++) {
-            Meeting meeting = allMeetingsOnDate.get(i);
-            if ((meeting.startTime.isEqual(meetingToAdd.endTime) || meeting.startTime.isAfter(meetingToAdd.endTime))) {
-                allMeetingsOnDate.add(i, meetingToAdd);
-                return;
+        for (int index = 0; index < noOfMeetings; index++) {
+            Meeting meeting = allMeetingsOnDate.get(index);
+            if (meeting.isAfter(meetingToAdd)) {
+                allMeetingsOnDate.add(index, meetingToAdd);
+                return allMeetingsOnDate;
             }
-            if (meeting.endTime.isEqual(meetingToAdd.startTime) || meeting.endTime.isBefore(meetingToAdd.startTime)) {
-                if((i+1) < noOfMeetings) {
-                    Meeting nextMeeting = allMeetingsOnDate.get(i+1);
-                    if(nextMeeting.startTime.isEqual(meetingToAdd.endTime) || nextMeeting.startTime.isAfter(meetingToAdd.endTime)){
-                        allMeetingsOnDate.add((i+1), meetingToAdd);
-                        return;
+//            if (meeting.getEndTime().isEqual(meetingToAdd.getStartTime()) || meeting.getEndTime().isBefore(meetingToAdd.getStartTime())) {
+            if (meetingToAdd.isAfter(meeting)) {
+                if ((index + 1) < noOfMeetings) {
+                    Meeting nextMeeting = allMeetingsOnDate.get(index + 1);
+                    if (nextMeeting.isAfter(meetingToAdd)) {
+                        allMeetingsOnDate.add((index + 1), meetingToAdd);
+                        return allMeetingsOnDate;
                     }
                 } else {
-                    allMeetingsOnDate.add((i+1), meetingToAdd);
+                    allMeetingsOnDate.add((index + 1), meetingToAdd);
                 }
             }
         }
+        return allMeetingsOnDate;
     }
 }

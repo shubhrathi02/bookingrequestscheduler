@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class MeetingInputScanner {
-    public List<Meeting> getInput(Scanner scanner) {
+class MeetingInputScanner {
+    List<Meeting> getInput(Scanner scanner) {
         List<Meeting> meetings = new ArrayList<>();
 
         while(scanner.hasNext()){

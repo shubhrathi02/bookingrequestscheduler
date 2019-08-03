@@ -1,16 +1,16 @@
 package com.assignment;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 
 public class Meeting implements Comparable<Meeting> {
 
-    LocalDateTime requestSubmissionTime;
-    LocalDateTime startTime;
-    LocalDateTime endTime;
-    String requestedBy;
+    private LocalDateTime requestSubmissionTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private String requestedBy;
 
-    public Meeting(LocalDateTime requestSubmissionTime, LocalDateTime startTime, int duration, String requestedBy) {
+    Meeting(LocalDateTime requestSubmissionTime, LocalDateTime startTime, int duration, String requestedBy) {
         this.requestSubmissionTime = requestSubmissionTime;
         this.startTime = startTime;
         this.endTime = this.startTime.plusHours(duration);
@@ -21,12 +21,16 @@ public class Meeting implements Comparable<Meeting> {
         return requestSubmissionTime;
     }
 
-    public LocalDateTime getStartTime() {
+    LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public String getRequestedBy() {
+    String getRequestedBy() {
         return requestedBy;
+    }
+
+    LocalDateTime getEndTime() {
+        return endTime;
     }
 
     @Override
@@ -43,4 +47,13 @@ public class Meeting implements Comparable<Meeting> {
     public int compareTo(Meeting meeting) {
         return this.requestSubmissionTime.isBefore(meeting.requestSubmissionTime) ? -1 : 1;
     }
+
+    boolean isAfter(Meeting meetingToAdd) {
+        return startTime.isEqual(meetingToAdd.getEndTime()) || startTime.isAfter(meetingToAdd.getEndTime());
+    }
+
+    LocalDate getMeetingDate() {
+        return startTime.toLocalDate();
+    }
+
 }

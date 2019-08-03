@@ -53,9 +53,4 @@ public class DateTimeUtilsTest extends TestCase {
         assertThat(dateTime.getMinute(), is(equalTo(10)));
     }
 
-    /*public void testGetDefaultEpochs() {
-        LocalDateTime dateTime = LocalDateTime.of(2019, 8, 3, 12, 27, 18);
-        long epochs = DateTimeUtils.getDefaultEpoch(dateTime);
-        assertThat(epochs, is(equalTo(1564835238L)));
-    }*/
 }

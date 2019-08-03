@@ -30,8 +30,4 @@ public class DateTimeUtils {
     public static LocalDateTime convertTimeAndDateToDateTime(LocalDate date, LocalTime time) {
         return LocalDateTime.of(date, time);
     }
-
-    /*public static long getDefaultEpoch(LocalDateTime dateTime) {
-        return dateTime.atZone(ZoneId.systemDefault()).toInstant().getEpochSecond();
-    }*/
 }

@@ -24,6 +24,13 @@ public class MeetingRequestProcessorTest extends TestCase {
     public void testProcessor() throws FileNotFoundException {
         givenInputMeetings();
         meetingsOutput = MeetingRequestProcessor.process(meetingsInput, startTime, endTime);
+        assertThat(meetingsOutput.size(), is(equalTo(2)));
+        LocalDate date = LocalDate.of(2011, 03, 21);
+        List<Meeting> meetingsOnDate = meetingsOutput.get(date);
+        assertThat(meetingsOnDate.size(), is(equalTo(1)));
+        LocalTime time = LocalTime.of(9, 0);
+        assertThat(meetingsOnDate.get(0).getStartTime().getHour(), is(equalTo(9)));
+        assertThat(meetingsOnDate.get(0).getRequestedBy(), is(equalTo("EMP002")));
     }
 
     private void givenInputMeetings() throws FileNotFoundException {
